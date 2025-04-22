@@ -6,6 +6,8 @@ import time
 import pathlib
 import config 
 import version as v
+import os
+import subprocess
 
 # --- PyQt5 Imports ---
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QVBoxLayout, QWidget,
@@ -48,12 +50,16 @@ class MainWindow(QMainWindow):
         self.ping_button.clicked.connect(self.ping_server)
 
         # create a button to force upload the save file
-        self.force_upload_button = QPushButton("Force Upload Save")
+        self.force_upload_button = QPushButton("Force Upload")
         self.force_upload_button.clicked.connect(self.force_upload_save)
 
         # create a button to download the latest save file
-        self.download_latest_button = QPushButton("Download Latest Save")
+        self.download_latest_button = QPushButton("Download Latest")
         self.download_latest_button.clicked.connect(self.download_latest_save)
+
+        # create a button to open save directory
+        self.open_save_dir_button = QPushButton("Open Folder")
+        self.open_save_dir_button.clicked.connect(self.open_save_directory)
 
         # Set up the central widget and layout
         central_widget = QWidget()
@@ -65,6 +71,7 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(self.ping_button)
         button_layout.addWidget(self.force_upload_button)
         button_layout.addWidget(self.download_latest_button)
+        button_layout.addWidget(self.open_save_dir_button)
         button_layout.addStretch(1)  # Push button to the left
         
         main_layout.addLayout(button_layout)
@@ -97,6 +104,39 @@ class MainWindow(QMainWindow):
     def force_upload_save(self):
         """Force upload the save file."""
         self.worker.force_upload_save()
+
+    def open_save_directory(self):
+        """Open the directory containing the save files."""
+        save_path = self.worker.get_save_file_path()
+        if not save_path:
+            self.append_log("[Error] Could not determine save file path.")
+            return
+            
+        # Get the directory containing the save file
+        save_dir = os.path.dirname(save_path)
+        
+        # Check if directory exists
+        if not os.path.exists(save_dir):
+            self.append_log(f"[Warning] Save directory does not exist: {save_dir}")
+            # Try to create the directory
+            try:
+                os.makedirs(save_dir, exist_ok=True)
+                self.append_log(f"Created save directory: {save_dir}")
+            except Exception as e:
+                self.append_log(f"[Error] Failed to create save directory: {e}")
+                return
+        
+        # Open the directory using the default file explorer
+        self.append_log(f"Opening save directory: {save_dir}")
+        try:
+            if sys.platform == "win32":
+                os.startfile(save_dir)
+            elif sys.platform == "darwin":  # macOS
+                subprocess.run(["open", save_dir])
+            else:  # Linux
+                subprocess.run(["xdg-open", save_dir])
+        except Exception as e:
+            self.append_log(f"[Error] Failed to open save directory: {e}")
 
     def open_settings(self):
         """Open the settings dialog."""
