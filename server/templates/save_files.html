@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Save Files - Dragon Wilds Auto-Sync{% endblock %}
+
+{% block content %}
+    <div class="dashboard-header">
+        <h2>Your Save Files</h2>
+        <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+    </div>
+    
+    <div class="dashboard-section">
+        <h3>Select a Save File to Download</h3>
+        
+        <div class="save-files-list">
+            {% for save_file in save_files %}
+                <div class="save-file-item">
+                    <div class="save-file-name">{{ save_file.world_name }}</div>
+                    <a href="{{ url_for('download_latest_save_web', save_file=save_file.world_name) }}" class="btn">
+                        <span style="margin-right: 10px;">⬇️</span> Download
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .dashboard-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .save-files-list {
+        margin-top: 20px;
+    }
+    
+    .save-file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+    
+    .save-file-name {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+</style>
+{% endblock %} 

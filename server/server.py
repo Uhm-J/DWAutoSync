@@ -24,6 +24,7 @@ os.makedirs(LOG_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB max upload size
 
+
 # Load API keys
 API_KEYS = read_api_keys()
 
@@ -82,7 +83,8 @@ def dashboard():
         user_name=user_name,
         has_save=save_info["has_save"],
         saves_count=save_info["saves_count"],
-        last_upload_time=save_info["last_upload_time"]
+        last_upload_time=save_info["last_upload_time"],
+        save_files=save_info["save_files"]
     )
 
 @app.route("/download-latest-web")
@@ -94,17 +96,46 @@ def download_latest_save_web():
     
     user_id = session["user_id"]
     
-    # Get user's save information
-    save_info = get_user_save_info(user_id)
+    # Get save file name from the query parameter
+    save_file = request.args.get("save_file")
     
-    if not save_info["has_save"]:
-        return "No save file found", 404
+    # If no save file specified, show the save file selection page
+    if not save_file:
+        # Get user's save information
+        save_info = get_user_save_info(user_id)
+        
+        if not save_info["has_save"]:
+            return "No save files found", 404
+        
+        # If there's only one save file, download it directly
+        if len(save_info["save_files"]) == 1:
+            save_path = save_info["save_files"][0]["path"]
+            world_name = save_info["save_files"][0]["world_name"]
+            return send_file(
+                save_path,
+                as_attachment=True,
+                download_name=world_name
+            )
+        
+        # Otherwise, show the template with all save files
+        return render_template(
+            "save_files.html",
+            user_id=user_id,
+            user_name=session.get("user_name", user_id),
+            save_files=save_info["save_files"]
+        )
     
-    # Return the file as a download
+    # Otherwise, download the specified save file
+    upload_dir = Path("uploads")
+    save_path = upload_dir / f"latest_{save_file}"
+    
+    if not save_path.exists():
+        return "Save file not found", 404
+    
     return send_file(
-        save_info["latest_save_path"],
+        save_path,
         as_attachment=True,
-        download_name="DragonWilds.sav"
+        download_name=save_file
     )
 
 @app.route("/logout")
@@ -210,6 +241,11 @@ def upload_save():
         "timestamp": timestamp
     })
 
+@app.route("/download-client")
+def download_client():
+    """Download the client"""
+    return send_file("DWAutoSync.zip", as_attachment=True)
+
 @app.route("/api/download-latest")
 def download_latest_save():
     """Download the user's latest save file"""
@@ -256,4 +292,4 @@ def count_saves():
 
 if __name__ == "__main__":
     # Run the Flask app
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=6900, debug=True) 

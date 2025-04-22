@@ -9,15 +9,25 @@
     </div>
     
     <div class="dashboard-section">
-        <h3>Your Latest Save</h3>
+        <h3>Your Save Files</h3>
         
         {% if has_save %}
             <div class="save-info">
-                <p><strong>Last Upload:</strong> {{ last_upload_time }}</p>
                 
-                <a href="{{ url_for('download_latest_save_web') }}" class="btn">
-                    <span style="margin-right: 10px;">⬇️</span> Download Latest Save
-                </a>
+                {% if save_files|length == 1 %}
+                    <a href="{{ url_for('download_latest_save_web', save_file=save_files[0].world_name) }}" class="btn">
+                        <span style="margin-right: 10px;">⬇️</span> Download Latest Save
+                    </a>
+                {% else %}
+                    {% for save_file in save_files %}
+                        <div class="save-file-item">
+                            <div class="save-file-name">{{ save_file.world_name }}</div>
+                            <a href="{{ url_for('download_latest_save_web', save_file=save_file.world_name) }}" class="btn">
+                                <span style="margin-right: 10px;">⬇️</span> Download
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
         {% else %}
             <p>You don't have any save files uploaded yet.</p>
@@ -37,6 +47,12 @@
                 <td>{{ saves_count }}</td>
             </tr>
         </table>
+    </div>
+    <div class="dashboard-section">
+        <h3>Download the Client</h3>
+        <a href="{{ url_for('download_client') }}" class="btn">
+            <span style="margin-right: 10px;">⬇️</span> Download Client
+        </a>
     </div>
 {% endblock %}
 
@@ -74,6 +90,21 @@
     
     .info-table tr:last-child td {
         border-bottom: none;
+    }
+    
+    .save-file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+    
+    .save-file-name {
+        font-weight: bold;
     }
 </style>
 {% endblock %} 

@@ -63,30 +63,33 @@ def get_user_save_info(user_id):
     Returns:
         dict: A dictionary containing save file information
     """
-    upload_dir = Path("uploads") / user_id
-    
+    upload_dir = Path("uploads")
     # Check if user directory exists
     if not upload_dir.exists() or not upload_dir.is_dir():
         return {
             "has_save": False,
             "saves_count": 0,
             "last_upload_time": None,
-            "latest_save_path": None
+            "latest_save_path": None,
+            "save_files": []
         }
     
     # Count save files (excluding latest_* files)
     saves_count = 0
-    latest_save_path = None
     last_upload_time = None
     
-    # Find the latest save file (which starts with latest_)
+    # Find all the latest save files (which start with latest_)
+    save_files = []
     for file_path in upload_dir.glob("latest_*"):
         if file_path.is_file():
-            latest_save_path = file_path
-            break
+            world_name = file_path.name.replace("latest_", "")
+            save_files.append({
+                "path": str(file_path),
+                "world_name": world_name
+            })
     
     # Count all save files except the latest_* files
-    for file_path in upload_dir.glob("*"):
+    for file_path in upload_dir.glob(f"{user_id}_*"):
         if file_path.is_file() and not file_path.name.startswith("latest_"):
             saves_count += 1
             
@@ -110,8 +113,9 @@ def get_user_save_info(user_id):
             pass
     
     return {
-        "has_save": latest_save_path is not None,
+        "has_save": len(save_files) > 0,
         "saves_count": saves_count,
         "last_upload_time": last_upload_time,
-        "latest_save_path": latest_save_path
+        "latest_save_path": save_files[0]["path"] if save_files else None,
+        "save_files": save_files
     }
