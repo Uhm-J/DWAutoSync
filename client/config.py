@@ -7,7 +7,7 @@ import pathlib
 
 # --- Core Settings ---
 TARGET_PROCESS_NAME = "RSDragonwilds-Win64-Shipping.exe"
-POLLING_INTERVAL_SECONDS = 5
+DEFAULT_POLLING_INTERVAL_SECONDS = 30  # Default value, will be overridden by settings
 
 # --- Save File Location ---
 # ** REPLACE: Folder name within the user's config/AppData directory **
@@ -59,7 +59,8 @@ def load_settings():
         "user_name": "",
         "api_key": DEFAULT_API_KEY,
         "server_url": DEFAULT_SERVER_URL,
-        "save_file_name": SAVE_FILE_NAME
+        "save_file_name": SAVE_FILE_NAME,
+        "polling_interval": DEFAULT_POLLING_INTERVAL_SECONDS
     }
 
 # Load settings from file
@@ -71,6 +72,8 @@ SERVER_URL = SETTINGS.get("server_url", DEFAULT_SERVER_URL)
 API_KEY = SETTINGS.get("api_key", DEFAULT_API_KEY)
 USER_NAME = SETTINGS.get("user_name", "")
 SAVE_FILE_NAME = SETTINGS.get("save_file_name", SAVE_FILE_NAME)
+# Get polling interval from settings
+POLLING_INTERVAL_SECONDS = int(SETTINGS.get("polling_interval", DEFAULT_POLLING_INTERVAL_SECONDS))
 
 if not SAVE_FILE_NAME.endswith(".sav"):
     SAVE_FILE_NAME = SAVE_FILE_NAME + ".sav"

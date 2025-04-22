@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
             if config.USER_NAME:
                 self.append_log(f"User set to: {config.USER_NAME}")
             self.append_log(f"Server URL set to: {config.SERVER_URL}")
-            
+            self.append_log(f"Check interval set to: {config.POLLING_INTERVAL_SECONDS} seconds")
 
     def setup_tray_icon(self):
         """Creates and configures the system tray icon and menu."""

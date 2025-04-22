@@ -221,6 +221,7 @@ class Worker(QObject):
     def run_monitoring_loop(self):
         """The main monitoring loop. Runs until stop() is called."""
         self.log_message.emit("Monitoring thread started.")
+        self.log_message.emit(f"Using check interval of {config.POLLING_INTERVAL_SECONDS} seconds.")
         try:
             # Perform initial check
             self._was_process_running = self.find_process(config.TARGET_PROCESS_NAME)

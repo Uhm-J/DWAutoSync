@@ -6,7 +6,8 @@ import os
 from pathlib import Path
 
 from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, 
-                            QLineEdit, QPushButton, QLabel, QMessageBox)
+                            QLineEdit, QPushButton, QLabel, QMessageBox,
+                            QSpinBox)
 from PyQt5.QtCore import Qt
 
 class SettingsDialog(QDialog):
@@ -15,7 +16,7 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
-        self.resize(400, 200)
+        self.resize(400, 250)  # Increased height to accommodate new field
         
         # Initialize settings
         self.config_path = self.get_config_path()
@@ -47,6 +48,14 @@ class SettingsDialog(QDialog):
         # Save file name field
         self.save_file_name_edit = QLineEdit(self.settings.get("save_file_name", ""))
         form_layout.addRow("Save File Name:", self.save_file_name_edit)
+        
+        # Polling interval field
+        self.polling_interval_edit = QSpinBox()
+        self.polling_interval_edit.setRange(5, 300)  # 5 seconds to 5 minutes
+        self.polling_interval_edit.setSingleStep(5)
+        self.polling_interval_edit.setSuffix(" seconds")
+        self.polling_interval_edit.setValue(int(self.settings.get("polling_interval", 30)))
+        form_layout.addRow("Check Interval:", self.polling_interval_edit)
         
         main_layout.addLayout(form_layout)
         
@@ -89,8 +98,9 @@ class SettingsDialog(QDialog):
         return {
             "user_name": "",
             "api_key": "",
-            "server_url": "https://dragonwilds.com/api",
-            "save_file_name": "DragonWilds.sav"
+            "server_url": "http://serveradreshere.com/",
+            "save_file_name": "YourSaveFileName.sav",
+            "polling_interval": 30
         }
         
     def save_settings(self):
@@ -99,7 +109,8 @@ class SettingsDialog(QDialog):
             "user_name": self.name_edit.text().strip(),
             "api_key": self.api_key_edit.text().strip(),
             "server_url": self.server_url_edit.text().strip(),
-            "save_file_name": self.save_file_name_edit.text().strip()
+            "save_file_name": self.save_file_name_edit.text().strip(),
+            "polling_interval": self.polling_interval_edit.value()
         }
         
         try:
