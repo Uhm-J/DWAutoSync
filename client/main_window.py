@@ -4,6 +4,8 @@
 import sys
 import time
 import pathlib
+import config 
+import version as v
 
 # --- PyQt5 Imports ---
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QVBoxLayout, QWidget,
@@ -21,7 +23,11 @@ class MainWindow(QMainWindow):
     """Main application window."""
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(config.APP_NAME)
+        
+        # Read version from .version file
+        version = v.VERSION
+            
+        self.setWindowTitle(f"{config.APP_NAME} v{version}")
         # Set window icon from config
         if pathlib.Path(config.ICON_PATH).is_file():
             self.setWindowIcon(QIcon(config.ICON_PATH))
@@ -37,6 +43,18 @@ class MainWindow(QMainWindow):
         self.settings_button = QPushButton("Settings")
         self.settings_button.clicked.connect(self.open_settings)
 
+        # create a button to ping the server
+        self.ping_button = QPushButton("Ping Server")
+        self.ping_button.clicked.connect(self.ping_server)
+
+        # create a button to force upload the save file
+        self.force_upload_button = QPushButton("Force Upload Save")
+        self.force_upload_button.clicked.connect(self.force_upload_save)
+
+        # create a button to download the latest save file
+        self.download_latest_button = QPushButton("Download Latest Save")
+        self.download_latest_button.clicked.connect(self.download_latest_save)
+
         # Set up the central widget and layout
         central_widget = QWidget()
         main_layout = QVBoxLayout(central_widget)
@@ -44,6 +62,9 @@ class MainWindow(QMainWindow):
         # Add button layout at the top
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.settings_button)
+        button_layout.addWidget(self.ping_button)
+        button_layout.addWidget(self.force_upload_button)
+        button_layout.addWidget(self.download_latest_button)
         button_layout.addStretch(1)  # Push button to the left
         
         main_layout.addLayout(button_layout)
@@ -65,6 +86,18 @@ class MainWindow(QMainWindow):
         if config.USER_NAME:
             self.append_log(f"Logged in as: {config.USER_NAME}")
 
+    def ping_server(self):
+        """Ping the server and display the response."""
+        self.worker.ping_server()
+
+    def download_latest_save(self):
+        """Download the latest save file from the server."""
+        self.worker.download_latest_save()
+
+    def force_upload_save(self):
+        """Force upload the save file."""
+        self.worker.force_upload_save()
+
     def open_settings(self):
         """Open the settings dialog."""
         dialog = SettingsDialog(self)
@@ -84,6 +117,7 @@ class MainWindow(QMainWindow):
             if config.USER_NAME:
                 self.append_log(f"User set to: {config.USER_NAME}")
             self.append_log(f"Server URL set to: {config.SERVER_URL}")
+            
 
     def setup_tray_icon(self):
         """Creates and configures the system tray icon and menu."""
@@ -154,6 +188,10 @@ class MainWindow(QMainWindow):
         self.tray_icon.setToolTip(tooltip)
         # You could also change the tray icon itself here based on status
         # e.g., self.tray_icon.setIcon(QIcon('running_icon.png' if is_running else 'stopped_icon.png'))
+        if is_running:
+            self.tray_icon.setIcon(QIcon(config.ICON_PATH))
+        else:
+            self.tray_icon.setIcon(QIcon(config.ICON_PATH))
 
     @pyqtSlot(QSystemTrayIcon.ActivationReason)
     def handle_tray_activation(self, reason):

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Dragon Wilds Auto-Sync{% endblock %}
+
+{% block content %}
+    <div class="dashboard-header">
+        <h2>Welcome, {{ user_name }}</h2>
+        <a href="{{ url_for('logout') }}" class="btn" style="background-color: #e74c3c;">Logout</a>
+    </div>
+    
+    <div class="dashboard-section">
+        <h3>Your Latest Save</h3>
+        
+        {% if has_save %}
+            <div class="save-info">
+                <p><strong>Last Upload:</strong> {{ last_upload_time }}</p>
+                
+                <a href="{{ url_for('download_latest_save_web') }}" class="btn">
+                    <span style="margin-right: 10px;">⬇️</span> Download Latest Save
+                </a>
+            </div>
+        {% else %}
+            <p>You don't have any save files uploaded yet.</p>
+            <p>The Dragon Wilds Auto-Sync client will automatically upload your save files when you close the game.</p>
+        {% endif %}
+    </div>
+    
+    <div class="dashboard-section">
+        <h3>Your Account Information</h3>
+        <table class="info-table">
+            <tr>
+                <td><strong>User ID:</strong></td>
+                <td>{{ user_id }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Saves:</strong></td>
+                <td>{{ saves_count }}</td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .dashboard-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .save-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .info-table td {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .info-table tr:last-child td {
+        border-bottom: none;
+    }
+</style>
+{% endblock %} 

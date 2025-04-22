@@ -1,51 +1,131 @@
-# Dragon-Wilds Auto-Sync
+# Dragon Wilds Auto-Sync
 
-A utility application that monitors for the Dragon Wilds game process and automatically syncs save files to a server when the game closes.
+An automatic save synchronization system for Dragon Wilds game, consisting of a client application that monitors when the game closes and automatically uploads save files to a server.
 
 ## Features
 
 - System tray application that runs in the background
-- Monitors for the Dragon Wilds game process
+- Monitors when Dragon Wilds game is running
 - Automatically uploads save files when the game closes
-- Manual upload option
-- Configurable settings
+- Options to manually upload or download save files
+- Server component to store and manage save files
 
-## Setup
+## Project Structure
 
-1. Install the required dependencies:
+The project is organized into two main components:
+
+### Client
+
+The client is a desktop application that runs in the system tray and monitors when the Dragon Wilds game is closed. When the game closes, it automatically uploads the save file to the configured server.
+
+The client is built with Python and PyQt5.
+
+### Server
+
+The server is a simple Flask application that receives save files from clients and stores them with timestamps and user identification.
+
+The server provides RESTful API endpoints for:
+- Uploading save files
+- Checking server status
+- Viewing API documentation
+
+## Development Setup
+
+### Client Development
+
+1. Clone the repository
+2. Navigate to the `client` directory
+3. Install required packages:
    ```
    pip install -r requirements.txt
    ```
-
-2. Configure the application by editing `config.py`:
-   - Set your server upload URL
-   - Add your API key
-   - Configure the save folder name and file name
-   - Add an icon file (optional)
-
-3. Run the application:
+4. Run the client:
    ```
    python main.py
    ```
 
-## Configuration
+### Server Development
 
-Before running the application, you need to edit the `config.py` file to specify:
+1. Navigate to the `server` directory
+2. Install required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+3. Run the server:
+   ```
+   python server.py
+   ```
 
-- `SERVER_UPLOAD_URL`: The URL endpoint where save files will be uploaded
-- `API_KEY`: Your authentication key for the server
-- `SAVE_FOLDER_NAME`: The folder name within the AppData/config directory
-- `SAVE_FILE_NAME`: The name of the save file to upload
-- `ICON_PATH`: Path to an icon file (optional)
+## Building the Application
 
-## How It Works
-
-The application creates a worker thread that periodically checks if the Dragon Wilds game process is running. When it detects that the game has closed, it automatically uploads the save file to the configured server.
-
-The main application runs in the system tray, allowing it to operate in the background without cluttering your desktop.
-
-## System Requirements
+### Prerequisites
 
 - Python 3.6 or higher
-- PyQt5
-- Windows, macOS, or Linux operating system 
+- PyInstaller (installed automatically by the build script)
+- 7-Zip (optional, for automatic packaging)
+
+### Build Process
+
+The project includes a build script that automates the build process:
+
+1. Navigate to the project root directory
+2. Run the build script:
+   ```
+   build_release.bat
+   ```
+
+The build script performs the following steps:
+1. Extracts the version number from `client/version.py`
+2. Removes any existing executable
+3. Builds the application using PyInstaller
+4. Creates the distribution directory structure
+5. Updates the README with the current version
+6. Creates a ZIP file of the distribution
+
+### Manual Build
+
+If you prefer to build manually:
+
+1. Navigate to the client directory:
+   ```
+   cd client
+   ```
+
+2. Install PyInstaller:
+   ```
+   pip install pyinstaller
+   ```
+
+3. Build the executable:
+   ```
+   pyinstaller --onefile --windowed --icon=icon.ico --name=DWAutoSync --add-data="icon.ico;." --add-data="icon.png;." main.py
+   ```
+
+4. The executable will be created in the `dist` directory
+
+## Deployment
+
+### Client Distribution
+
+After building, you can distribute the application by providing the following:
+- DWAutoSync.exe
+- README.txt (with configuration instructions)
+
+Users only need to run the executable and configure their settings.
+
+### Server Deployment
+
+For production deployment, it's recommended to:
+
+1. Deploy the server to a dedicated host or cloud platform
+2. Set up proper authentication and HTTPS
+3. Configure clients with the production server URL
+
+## Documentation
+
+- Client user documentation is in the build directory's README.txt
+- Server API documentation is provided via an endpoint in the server application
+
+## Version History
+
+See the releases page for version history information. 

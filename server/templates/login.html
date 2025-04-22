@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Dragon Wilds Auto-Sync{% endblock %}
+
+{% block content %}
+    <h2>Login to Access Your Saves</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form id="login-form" method="post" action="{{ url_for('login') }}">
+        <div class="form-group">
+            <label for="api_key">API Key</label>
+            <input type="password" id="api_key" name="api_key" placeholder="Enter your API key" required>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn">Login</button>
+        </div>
+    </form>
+    
+    <div class="info-section">
+        <h3>Don't have an API key?</h3>
+        <p>If you don't have an API key, please contact the server administrator and hope they give you one, which they won't.</p>
+    </div>
+{% endblock %} 

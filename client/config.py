@@ -6,20 +6,20 @@ import os
 import pathlib
 
 # --- Core Settings ---
-TARGET_PROCESS_NAME = "DragonWilds.exe"
+TARGET_PROCESS_NAME = "RSDragonwilds-Win64-Shipping.exe"
 POLLING_INTERVAL_SECONDS = 5
 
 # --- Save File Location ---
 # ** REPLACE: Folder name within the user's config/AppData directory **
 # Example for Windows (%APPDATA%): "My Games\\DragonWilds"
 # Example for Linux (~/.config): "DragonWilds"
-SAVE_FOLDER_NAME = "%LOCALAPPDATA%\RSDragonwilds\Saved"
+SAVE_FOLDER_NAME = "\RSDragonwilds\Saved\SaveGames"
 # ** REPLACE: The actual save file name **
-SAVE_FILE_NAME = "DragonWilds.sav"
+SAVE_FILE_NAME = "DragonWilds.sav"  # Default save file name
 
 # --- UI Settings ---
 # ** REPLACE with the actual path to your icon file **
-ICON_PATH = "icon.png"
+ICON_PATH = "icon.ico"
 APP_NAME = "Dragon-Wilds Auto-Sync"
 
 # --- Default Server and Authentication ---
@@ -58,7 +58,8 @@ def load_settings():
     return {
         "user_name": "",
         "api_key": DEFAULT_API_KEY,
-        "server_url": DEFAULT_SERVER_URL
+        "server_url": DEFAULT_SERVER_URL,
+        "save_file_name": SAVE_FILE_NAME
     }
 
 # Load settings from file
@@ -69,11 +70,15 @@ SETTINGS = load_settings()
 SERVER_URL = SETTINGS.get("server_url", DEFAULT_SERVER_URL)
 API_KEY = SETTINGS.get("api_key", DEFAULT_API_KEY)
 USER_NAME = SETTINGS.get("user_name", "")
+SAVE_FILE_NAME = SETTINGS.get("save_file_name", SAVE_FILE_NAME)
+
+if not SAVE_FILE_NAME.endswith(".sav"):
+    SAVE_FILE_NAME = SAVE_FILE_NAME + ".sav"
 
 # Construct the full upload URL by appending /upload if needed
 SERVER_UPLOAD_URL = SERVER_URL
-if not SERVER_URL.endswith("/upload"):
-    SERVER_UPLOAD_URL = f"{SERVER_URL}/upload"
+if not SERVER_URL.endswith("/api/upload"):
+    SERVER_UPLOAD_URL = f"{SERVER_URL}/api/upload"
 
 # --- Helper function to check if config is valid ---
 def is_config_default():
